@@ -1,18 +1,39 @@
 const express = require("express");
-const app = express();
+const mongoose = require("mongoose");
+const chalk = require("chalk");
+const cors = require("cors");
 
 const routes = require("./routes");
-
 require("./services/passport");
 
-app.use(routes);
+const { database } = require("./config/keys");
+const app = express();
 
-app.get("/api/test", (req, res) => {
-  res.send("hello test route");
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+
+// Connect to MongoDB
+mongoose.set("useCreateIndex", true);
+mongoose
+  .connect(database, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  })
+  .then(() =>
+    console.log(`${chalk.green("✓")} ${chalk.blue("MongoDB Connected!")}`)
+  )
+  .catch((err) => console.log(err));
+
+app.use(routes);
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log("server started on port", PORT);
+  console.log(
+    `${chalk.green("✓")} ${chalk.blue(
+      "Server Started on port"
+    )} ${chalk.bgMagenta(PORT)}`
+  );
 });
