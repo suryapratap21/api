@@ -13,6 +13,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+app.use(routes);
+
 // Connect to MongoDB
 mongoose.set("useCreateIndex", true);
 mongoose
@@ -24,16 +26,15 @@ mongoose
   .then(() =>
     console.log(`${chalk.green("✓")} ${chalk.blue("MongoDB Connected!")}`)
   )
+  .then(() => {
+    const PORT = process.env.PORT || 5000;
+
+    app.listen(PORT, () => {
+      console.log(
+        `${chalk.green("✓")} ${chalk.blue(
+          "Server Started on port"
+        )} ${chalk.bgMagenta(PORT)}`
+      );
+    });
+  })
   .catch((err) => console.log(err));
-
-app.use(routes);
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(
-    `${chalk.green("✓")} ${chalk.blue(
-      "Server Started on port"
-    )} ${chalk.bgMagenta(PORT)}`
-  );
-});
