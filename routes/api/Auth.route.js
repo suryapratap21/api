@@ -2,7 +2,11 @@ const router = require("express").Router();
 const passport = require("passport");
 
 // bring in models and controllers
-const registerUser = require("../../controllers/Auth.controller.js");
+const registerUser = require("../../controllers/auth/register");
+const loginUser = require("../../controllers/auth/login");
+
+// login user
+router.post("/login", loginUser);
 
 // register a user
 router.post("/register", registerUser);

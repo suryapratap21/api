@@ -7,4 +7,9 @@ const registerValidation = Joi.object({
   role: Joi.string().allow("CUSTOMER", "STORE_MANAGER"),
 });
 
-module.exports = registerValidation;
+const loginValidation = Joi.object({
+  email: Joi.string().email().lowercase().required(),
+  password: Joi.string().alphanum().min(2).required(),
+});
+
+module.exports = { registerValidation, loginValidation };

@@ -1,20 +1,21 @@
 const bcrypt = require("bcryptjs");
 const createError = require("http-errors");
+const jwt = require("jsonwebtoken");
 
 // import models and helpers
-const User = require("../models/User.model");
-const registerValidation = require("../services/validation_schema");
+const User = require("../../models/User.model");
+const { registerValidation } = require("../../services/validation_schema");
+const { tokenLife, secret } = require("../../config/keys").jwt;
 
 const registerUser = async (req, res, next) => {
-  const { email, name, password, role } = req.body;
-
-  // validation code here
   try {
+    // validation code here
     const result = await registerValidation.validateAsync(req.body);
 
+    const { email, password, role, name } = result;
+
     // check for already registeration of user
-    User.findOne({ email: result.email }, async (err, existingUser) => {
-      if (err) next(err);
+    User.findOne({ email }, async (err, existingUser) => {
       if (existingUser) {
         return next(
           createError.Conflict(`${email} is already registered. Please login`)
@@ -33,10 +34,10 @@ const registerUser = async (req, res, next) => {
             );
           }
           const user = new User({
-            email,
-            name,
+            email: email,
+            name: name,
             password: hash,
-            role,
+            role: role,
           });
 
           // save user to the database
@@ -50,14 +51,33 @@ const registerUser = async (req, res, next) => {
                 )
               );
             }
-            res.send("the user is" + user);
+            const payload = {
+              id: user._id,
+            };
+            jwt.sign(
+              payload,
+              secret,
+              { expiresIn: tokenLife },
+              (err, token) => {
+                res.status(200).json({
+                  success: true,
+                  token: `Bearer ${token}`,
+                  user: {
+                    id: user._id,
+                    name: name,
+                    email: name,
+                    role: role,
+                  },
+                });
+              }
+            );
           });
         });
       });
     });
   } catch (error) {
     if (error.isJoi === true) error.status = 422;
-    return next(error);
+    next(error);
   }
 };
 
