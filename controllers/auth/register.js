@@ -9,7 +9,6 @@ const { tokenLife, secret } = require("../../config/keys").jwt;
 
 const registerUser = async (req, res, next) => {
   try {
-    console.log("hi");
     // validation code here
     const result = await registerValidation.validateAsync(req.body);
 
