@@ -4,7 +4,6 @@ const createError = require("http-errors");
 const { secret } = require("../config/keys").jwt;
 
 const verifyAccessToken = (req, res, next) => {
-  console.log("request headers", req.headers);
   // check if access token is passed in request header
   if (!req.headers["authorization"]) return next(createError.Unauthorized());
 
