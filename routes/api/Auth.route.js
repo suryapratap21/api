@@ -4,7 +4,7 @@ const passport = require("passport");
 // bring in models and controllers
 const registerUser = require("../../controllers/auth/register");
 const loginUser = require("../../controllers/auth/login");
-// const refresh = require("../../controllers/auth/refresh");
+const refresh = require("../../controllers/auth/refresh");
 
 // login user
 router.post("/login", loginUser);
@@ -13,7 +13,7 @@ router.post("/login", loginUser);
 router.post("/register", registerUser);
 
 // generate new access-token using refresh-token
-// router.post("/refresh-token", refresh);
+router.post("/refresh-token", refresh);
 
 // /api/auth/google
 router.get(
