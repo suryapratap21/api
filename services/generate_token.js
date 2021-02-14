@@ -1,12 +1,18 @@
 const jwt = require("jsonwebtoken");
 const createError = require("http-errors");
 
-const { secret } = require("../config/keys").jwt;
+const { accessSecret, refreshSecret } = require("../config/keys").jwt;
 
-const generateToken = (payload, expiresIn) => {
-  const token = jwt.sign(payload, secret, { expiresIn });
+const generateAccessToken = (payload, expiresIn) => {
+  const token = jwt.sign(payload, accessSecret, { expiresIn });
   if (!token) return createError();
   return token;
 };
 
-module.exports = generateToken;
+const generateRefreshToken = (payload, expiresIn) => {
+  const token = jwt.sign(payload, refreshSecret, { expiresIn });
+  if (!token) return createError();
+  return token;
+};
+
+module.exports = { generateAccessToken, generateRefreshToken };

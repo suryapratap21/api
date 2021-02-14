@@ -3,9 +3,12 @@ const createError = require("http-errors");
 
 // import models and helpers
 const User = require("../../models/User.model");
-const generateToken = require("../../services/generate_token");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../../services/generate_token");
 const { loginValidation } = require("../../services/validation_schema");
-const { tokenLife, secret } = require("../../config/keys").jwt;
+const { accessTokenLife, refreshTokenLife } = require("../../config/keys").jwt;
 
 const loginUser = async (req, res, next) => {
   try {
@@ -29,11 +32,13 @@ const loginUser = async (req, res, next) => {
         const payload = {
           id: user._id,
         };
-        const token = generateToken(payload, tokenLife);
-        if (token)
+        const accessToken = generateAccessToken(payload, accessTokenLife);
+        const refreshToken = generateRefreshToken(payload, refreshTokenLife);
+        if (accessToken && refreshToken)
           res.status(200).json({
             success: true,
-            token: `Bearer ${token}`,
+            accessToken,
+            refreshToken,
             user: {
               id: user._id,
               name: user.name,
