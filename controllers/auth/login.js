@@ -1,9 +1,9 @@
 const bcrypt = require("bcryptjs");
 const createError = require("http-errors");
-const jwt = require("jsonwebtoken");
 
 // import models and helpers
 const User = require("../../models/User.model");
+const generateToken = require("../../services/generate_token");
 const { loginValidation } = require("../../services/validation_schema");
 const { tokenLife, secret } = require("../../config/keys").jwt;
 
@@ -29,7 +29,8 @@ const loginUser = async (req, res, next) => {
         const payload = {
           id: user._id,
         };
-        jwt.sign(payload, secret, { expiresIn: tokenLife }, (err, token) => {
+        const token = generateToken(payload, tokenLife);
+        if (token)
           res.status(200).json({
             success: true,
             token: `Bearer ${token}`,
@@ -40,7 +41,6 @@ const loginUser = async (req, res, next) => {
               role: user.role,
             },
           });
-        });
       });
     });
   } catch (error) {
