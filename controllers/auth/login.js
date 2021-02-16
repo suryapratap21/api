@@ -3,6 +3,7 @@ const createError = require("http-errors");
 
 // import models and helpers
 const User = require("../../models/User.model");
+const Token = require("../../models/Token.model");
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -34,7 +35,25 @@ const loginUser = async (req, res, next) => {
         };
         const accessToken = generateAccessToken(payload, accessTokenLife);
         const refreshToken = generateRefreshToken(payload, refreshTokenLife);
-        if (accessToken && refreshToken)
+        if (accessToken && refreshToken) {
+          const token = new Token({
+            _userId: user._id,
+            token: refreshToken,
+          });
+          Token.findOne({ _userId: user._id }).then((resultQuery) => {
+            if (resultQuery === null) {
+              token.save();
+            } else {
+              resultQuery.overwrite(
+                new Token({
+                  _userId: user._id,
+                  token: refreshToken,
+                })
+              );
+              resultQuery.save();
+            }
+          });
+
           res.status(200).json({
             success: true,
             accessToken,
@@ -46,6 +65,7 @@ const loginUser = async (req, res, next) => {
               role: user.role,
             },
           });
+        }
       });
     });
   } catch (error) {
