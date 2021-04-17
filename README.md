@@ -21,3 +21,5 @@ yarn start
 The api will run at port specified in environment variable or by default at port 5000. 
 
 User registration and login routes are available. This is a token based solution to authentication.
+
+To get started, clone the repository and add environment variables in .env file.
